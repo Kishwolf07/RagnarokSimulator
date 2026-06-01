@@ -1,0 +1,806 @@
+/* --- 1. Base Styles & Global Animations --- */
+@keyframes panelGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(200, 169, 76, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(200, 169, 76, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(200, 169, 76, 0.2);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+body {
+    margin: 0;
+    font-family: 'Trebuchet MS', sans-serif;
+    background: url("img/RAGNAROK.png") center/cover no-repeat fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #e6f7ff;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: -1;
+}
+
+/*Tab bar */
+/* Tab Navigation Container */
+.panel-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: -1px; /* Overlap border for a seamless look */
+    padding-left: 10px;
+}
+
+/* Individual Tab Buttons */
+.tab-btn {
+    padding: 8px 25px;
+    background: #1a2a4a; /* Dark blue to match your theme */
+    border: 1px solid #c8a94c; /* Gold border */
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    color: #ffd96a;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.tab-btn:hover {
+    opacity: 1;
+    background: #253b66;
+}
+
+.tab-btn.active {
+    opacity: 1;
+    background: #2b3d5f; /* Slightly lighter when active */
+    border-bottom: 2px solid #2b3d5f; /* Hides the top border of the panel below */
+    z-index: 2;
+    box-shadow: 0 -2px 10px rgba(200, 169, 76, 0.2);
+}
+
+/* Content Area Wrapper */
+.panel-content-wrapper {
+    border: 1px solid #c8a94c;
+    background: rgba(5, 11, 28, 0.95);
+    border-radius: 0 5px 5px 5px;
+    padding: 15px;
+    min-height: 500px;
+}
+
+/* Hiding/Showing Logic */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/*skill Tree Css*/
+.skill-tree-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 60px); /* fixed columns */
+    gap: 12px 15px; 
+    justify-content: center;
+    position: relative;
+}
+#skillConnections {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+}
+
+.arrow-line {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(0,170,255,0.2), rgba(0,170,255,0.8));
+    opacity: 0.9;
+    transform-origin: left center;
+    z-index: 0;
+    border-radius: 2px;
+    filter: blur(0.3px);
+}
+
+/* subtle glow */
+.arrow-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    filter: blur(4px);
+    opacity: 0.5;
+}
+
+#skillTreeWrapper {
+    width: 100%;
+    height: 450px; /* adjust if needed */
+    position: relative;
+    overflow: hidden; /* no scrolling */
+    display: flex;
+    justify-content: center;
+}
+
+#skillTreeBody {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    
+    transform: scale(0.85);  /* zoom out so all skills fit */
+    transform-origin: top center;
+}
+
+/* Smooth scrollbar */
+#skillTreeBody::-webkit-scrollbar {
+    width: 6px;
+}
+#skillTreeBody::-webkit-scrollbar-thumb {
+    background: #c8a94c;
+    border-radius: 10px;
+}
+
+.skill {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    background: rgba(20, 30, 60, 0.9);
+    border: 2px solid rgba(255, 217, 106, 0.6);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.25s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    backdrop-filter: blur(6px);
+}
+
+.skill:hover {
+    transform: translateX(-50%) scale(1.15);
+    box-shadow: 0 0 12px #0af, 0 0 20px rgba(0,170,255,0.5);
+}
+
+.skill img {
+    width: 28px;
+    height: 28px;
+    transform: translateY(2px); /* small visual correction */
+}
+
+.skill-name {
+    font-size: 11px;
+    line-height: 1.2;
+    color: #fff;
+
+    white-space: normal;     /* allow wrapping */
+    word-break: break-word;  /* prevent overflow */
+}
+
+/* LEVEL TEXT */
+.skill .lvl {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 9px;
+    color: #fff;
+}
+/* STATES */
+.skill.learned {
+    border-color: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+}
+
+.skill.available {
+    border-color: gold;
+}
+
+.skill.locked {
+    opacity: 0.25;
+    filter: grayscale(80%);
+}
+
+/* ---Main Panel & Glass-morphism --- */
+.status-panel {
+    width: 1000px;
+    padding: 20px;
+    background: linear-gradient(180deg, rgba(8, 18, 40, 0.85), rgba(4, 10, 25, 0.95));
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    border: 2px solid #c8a94c;
+    animation: panelGlow 4s infinite ease-in-out;
+}
+
+.status-panel h2 {
+    text-align: center;
+    font-size: 30px;
+    color: #ffd96a;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    text-shadow: 0 0 5px #000, 0 0 10px #c8a94c, 0 0 20px #c8a94c;
+}
+
+/* --- 3. Character Box --- */
+.character-box {
+    order: 0;
+    margin-top: 0;  /* start at top */
+    width: 100%;
+    height: 400px;
+    background: #050b1c;
+    border-radius: 10px;
+    border: 2px solid #c8a94c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 25px black, 0 0 10px rgba(0, 0, 0, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.character-box::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(circle, rgba(0, 191, 255, 0.2), transparent 70%);
+    z-index: 0;
+}
+
+.character-box img.character-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    transform: scale(0.75); /* zoomed out more */
+}
+
+/* ---  HP/SP Box & Bars --- */
+.hp-sp-box {
+    background: rgba(8, 18, 40, 0.95);
+    padding: 15px; /* Increased padding for more breathing room */
+    border-radius: 10px;
+    border: 1px solid #c8a94c;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Added gap between rows */
+}
+
+.bar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    white-space: nowrap;
+    padding: 2px 0; /* Added slight vertical padding */
+}
+
+.bar-row span {
+    margin-right: 15px; /* Slightly increased margin */
+    min-width: 90px; /* Added min-width to keep labels aligned */
+}
+
+.custom-bar {
+    flex-grow: 1;
+    max-width: 150px; 
+    height: 20px; /* Increased height slightly for a less cramped look */
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #c8a94c;
+}
+
+.regen-info {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px; /* Added space above the regen text */
+    font-size: 13px;
+    color: #ffd96a;
+}
+
+.fill {
+    height: 100%;
+    width: 0%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-shadow: 0 0 3px black;
+    position: relative;
+}
+
+.fill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+
+
+.hp-fill {
+background: linear-gradient(90deg, #228b22, #32cd32);
+}
+
+.sp-fill {
+    background: linear-gradient(90deg, #003d8f, #0099ff);
+}
+
+/* --- 5. Interactive Elements & Inputs --- */
+.reset-button {
+    width: 250px;
+    padding: 10px;
+    position: absolute;
+    bottom: 30px;   
+    left: 28px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #000;
+    background: linear-gradient(180deg, #ffd96a, #c8a94c);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.reset-button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(180deg, #fff2a6, #e0c25c);
+}
+
+select:focus,
+input[type=number]:focus {
+    outline: none;
+    border-color: #00bfff;
+    box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+/* --- 6. Table Layouts & Hover Effects --- */
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #c8a94c;
+}
+
+.stats-table tr {
+    transition: background 0.3s ease;
+}
+
+.stats-table tr:hover {
+    background: rgba(200, 169, 76, 0.1) !important;
+    cursor: pointer;
+}
+
+.stats-table th {
+    background: #0f1f48;
+    color: #ffd96a;
+    padding: 6px;
+}
+
+.stats-table td {
+    background: #08112b;
+    padding: 6px;
+}
+
+/* --- LAYOUT CONTAINERS --- */
+.main-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.left-panel {
+    flex: 0 0 260px;
+    display: flex;   
+    flex-direction: column;
+    gap: 8px;
+    margin-top: -35px; 
+}
+
+.right-panel {
+    flex: 1;
+}
+
+.character-setup {
+    padding: 12px;
+    margin-bottom: 12px;
+    background: #0a1430;
+    border-radius: 10px;
+    border: 1px solid #c8a94c;
+}
+
+.character-setup h3 {
+    color: #00bfff;
+}
+
+.setup-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+select,
+input[type=number] {
+    background: #050b1c;
+    border: 1px solid #c8a94c;
+    color: #fff;
+    border-radius: 4px;
+    padding: 4px 6px;
+    text-align: center;
+}
+
+.tables-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.table-box {
+    flex: 1;
+    position: relative;
+    background: #0c1635;
+    border: 1px solid #c8a94c;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.table-box h4 {
+    margin: 5px 0 10px;
+    text-align: center;
+    color: #00bfff;
+}
+
+/* --- GENDER SWITCHING REDESIGN --- */
+.gender-switch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.gender-label {
+    font-size: 10px;
+    color: #ffd96a;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 70px;
+    height: 30px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #050b1c; /* Deep dark blue */
+    border: 1px solid #c8a94c; /* Gold border */
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+/* The Sliding Metallic Block */
+.slider:before {
+    content: "M"; 
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    color: #050b1c; /* Dark text on gold button */
+    height: 22px;
+    width: 30px;
+    left: 3px;
+    bottom: 3px;
+    background: linear-gradient(180deg, #ffd96a 0%, #c8a94c 100%);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Move the slider and change the letter to F when checked */
+input:checked + .slider:before {
+    transform: translateX(32px);
+    content: "F";
+}
+
+/* Hover Effect */
+.switch:hover .slider {
+    border-color: #ffd96a;
+    box-shadow: 0 0 10px rgba(200, 169, 76, 0.3), inset 0 0 5px black;
+}
+
+/* Active/Focus state */
+input:focus + .slider {
+    box-shadow: 0 0 8px rgba(200, 169, 76, 0.6);
+}
+
+.switch:hover .slider {
+    box-shadow: 0 0 10px rgba(200, 169, 76, 0.4), inset 0 0 5px black;
+}
+
+.character-box img.character-gif {
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* STAT ICONS */
+.stat-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+/* STATUS DESIGN */
+.status-columns {
+    display: flex;
+    gap: 10px;
+}
+
+.status-columns table {
+    flex: 1;
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.status-columns th,
+.status-columns td {
+    padding: 6px 4px;
+    border: 1px solid rgba(0, 150, 255, 0.5);
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.status-columns th {
+    color: #ffd96a;
+    display: flex;
+    align-items: center;
+}
+
+.status-points {
+    margin-top: 30px;
+    text-align: center;
+    background: rgba(0, 0, 50, 0.15);
+    padding: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    border-top: 5px solid rgba(0, 150, 255, 0.5);
+    border-radius: 0 0 6px 6px;
+}
+
+@media screen and (max-width: 1000px) {
+    .main-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+    .tables-container {
+        flex-direction: column;
+    }
+}
+
+/* SKILL BOXES */
+.skill-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1e1e1e;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 6px;
+    width: 60px;
+    height: 80px;
+    position: relative;
+    z-index: 1;
+}
+
+.skill-box img {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 2px;
+}
+
+.skill-label {
+    font-size: 10px;
+    text-align: center;
+    color: #fff;
+}
+
+.skill-level {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 10px;
+    background: black;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+
+/* SKILL TOOLTIP */
+.skill {
+    position: absolute;
+    cursor: pointer;
+}
+
+.skill-tooltip {
+    position: fixed; /* follow the mouse */
+    max-width: 300px;
+    min-width: 120px;
+    background-color: #1e1e2f; /* solid card */
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: left;
+    pointer-events: none;
+    white-space: normal;
+    word-break: break-word;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 1px solid #0af; /* subtle glow */
+}
+
+.skill-tooltip.show {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 6px 18px rgba(0, 170, 255, 0.8), 0 0 12px rgba(0, 170, 255, 0.5);
+}
+
+.skill-tooltip strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.skill-tooltip em {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #0af;
+}
+
+/* QUEST SKILL COLOR */
+.skill.quest-skill {
+    border-color: #ff69b4;
+    box-shadow: 0 0 10px rgba(255,105,180,0.6);
+}
+
+.skill.quest-skill::before {
+    content: "Q";
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ff69b4;
+    color: white;
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 6px;
+}
+
+/* SKILL POINTS BADGE */
+.skill-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.skill-points-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #0a1f44, #102c66);
+    border: 1px solid #00bfff;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
+    font-size: 13px;
+    font-weight: bold;
+    color: #cceeff;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glow pulse */
+@keyframes spGlow {
+    0% { box-shadow: 0 0 8px rgba(0,191,255,0.3); }
+    50% { box-shadow: 0 0 16px rgba(0,191,255,0.8); }
+    100% { box-shadow: 0 0 8px rgba(0,191,255,0.3); }
+}
+
+.skill-points-badge {
+    animation: spGlow 2.5s infinite ease-in-out;
+}
+
+/* Label */
+.skill-points-badge .sp-label {
+    color: #88ccff;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+/* Value (main focus) */
+.skill-points-badge .sp-value {
+    font-size: 16px;
+    color: #ffd96a;
+    text-shadow: 0 0 6px rgba(255, 217, 106, 0.8);
+}
+
+/* Shine effect */
+.skill-points-badge::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: spShine 3s infinite;
+}
+
+@keyframes spShine {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+@keyframes shake-red {
+    0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0px red; }
+    25% { transform: translateX(-52%) scale(1.05); box-shadow: 0 0 15px red; }
+    50% { transform: translateX(-48%) scale(1.05); box-shadow: 0 0 15px red; }
+    75% { transform: translateX(-51%) scale(1.05); box-shadow: 0 0 15px red; }
+    100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0px red; }
+}
+
+.insufficient-points {
+    animation: shake-red 0.4s ease-in-out;
+    border: 2px solid red !important;
+    z-index: 100; /* Ensure it stays above other lines while shaking */
+}
